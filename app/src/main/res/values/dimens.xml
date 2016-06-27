@@ -1,0 +1,11 @@
+<resources>
+
+    <dimen name="commit_list_item_margin_sides">16dp</dimen>
+    <dimen name="commit_list_author_margin_top">16dp</dimen>
+    <dimen name="commit_list_sha_margin_top">16dp</dimen>
+    <dimen name="commit_list_message_margin_top">8dp</dimen>
+    <dimen name="commit_list_divider_margin_top">12dp</dimen>
+
+    <dimen name="commit_list_divider_height">1dp</dimen>
+
+</resources>
