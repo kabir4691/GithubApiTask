@@ -14,4 +14,5 @@ public interface CommitsView {
     boolean isViewDestroyed();
 
     void setContent(@Nullable List<CommitItem> commitItems);
+    void scrollToTop();
 }

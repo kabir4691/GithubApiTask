@@ -8,6 +8,7 @@ public class ApiParameter {
     public static final String PAGE = "page";
     public static final String PER_PAGE = "per_page";
 
+    public static final String AVATAR_URL = "avatar_url";
     public static final String SHA = "sha";
     public static final String COMMIT = "commit";
     public static final String AUTHOR = "author";

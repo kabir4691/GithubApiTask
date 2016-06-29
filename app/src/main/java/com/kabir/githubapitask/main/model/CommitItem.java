@@ -11,6 +11,7 @@ import org.json.JSONObject;
  */
 public class CommitItem {
 
+    private String avatar;
     private String author;
     private String sha;
     private String message;
@@ -24,6 +25,9 @@ public class CommitItem {
 
         CommitItem commitItem = new CommitItem();
 
+        JSONObject authorObject = jsonObject.getJSONObject(ApiParameter.AUTHOR);
+        commitItem.avatar = authorObject.getString(ApiParameter.AVATAR_URL);
+
         String shaString = jsonObject.getString(ApiParameter.SHA);
         if (!StringUtils.isNullOrEmpty(shaString)) {
             commitItem.sha = shaString;
@@ -33,10 +37,15 @@ public class CommitItem {
         JSONObject commitObject = jsonObject.getJSONObject(ApiParameter.COMMIT);
         commitItem.message = commitObject.getString(ApiParameter.MESSAGE);
 
-        JSONObject authorObject = commitObject.getJSONObject(ApiParameter.AUTHOR);
-        commitItem.author = authorObject.getString(ApiParameter.NAME);
+        commitItem.author = commitObject.getJSONObject(ApiParameter.AUTHOR)
+                                        .getString(ApiParameter.NAME);
+
 
         return commitItem;
+    }
+
+    public String getAvatar() {
+        return avatar;
     }
 
     public String getAuthor() {

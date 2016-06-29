@@ -7,11 +7,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kabir.githubapitask.R;
 import com.kabir.githubapitask.main.model.CommitItem;
 import com.kabir.githubapitask.util.ListUtils;
+import com.kabir.githubapitask.util.image.provider.ImageProvider;
 
 import java.util.List;
 
@@ -24,11 +26,15 @@ import butterknife.ButterKnife;
 public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private LayoutInflater layoutInflater;
+    private ImageProvider imageProvider;
 
     private List<CommitItem> itemList;
 
-    public CommitsAdapter(@NonNull Context context) {
+    private final float THUMBNAIL_QUALITY = 0.25f;
+
+    public CommitsAdapter(@NonNull Context context, @NonNull ImageProvider imageProvider) {
         layoutInflater = LayoutInflater.from(context);
+        this.imageProvider = imageProvider;
     }
 
     @Override
@@ -46,6 +52,9 @@ public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return;
         }
 
+        imageProvider.displayImage(commitItem.getAvatar(), THUMBNAIL_QUALITY, android.R.color.white,
+                                   android.R.color.darker_gray, viewHolder.authorImageView);
+
         viewHolder.authorTextView.setText(commitItem.getAuthor());
         viewHolder.shaTextView.setText(commitItem.getShaDisplayText());
         viewHolder.messageTextView.setText(commitItem.getMessage());
@@ -58,6 +67,7 @@ public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public class CommitViewHolder extends RecyclerView.ViewHolder {
 
+        @Bind(R.id.author_image_view) ImageView authorImageView;
         @Bind(R.id.author_text_view) TextView authorTextView;
         @Bind(R.id.sha_text_view) TextView shaTextView;
         @Bind(R.id.message_text_view) TextView messageTextView;

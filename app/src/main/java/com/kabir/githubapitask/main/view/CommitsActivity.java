@@ -1,16 +1,20 @@
 package com.kabir.githubapitask.main.view;
 
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 import com.kabir.githubapitask.R;
 import com.kabir.githubapitask.main.api.GithubApiProvider;
 import com.kabir.githubapitask.main.model.CommitItem;
 import com.kabir.githubapitask.main.presenter.CommitsPresenter;
 import com.kabir.githubapitask.main.presenter.CommitsPresenterImpl;
+import com.kabir.githubapitask.util.image.provider.GlideImageProvider;
 
 import java.util.List;
 
@@ -41,13 +45,40 @@ public class CommitsActivity extends AppCompatActivity implements CommitsView {
 
         contentRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        commitsAdapter = new CommitsAdapter(this);
+        commitsAdapter = new CommitsAdapter(this, new GlideImageProvider(this));
         contentRecyclerView.setAdapter(commitsAdapter);
 
         commitsPresenter = new CommitsPresenterImpl(this, new GithubApiProvider());
-        if (commitsPresenter.attachView(getIntent().getExtras())) {
+        if (commitsPresenter.attachView(getIntent())) {
             commitsPresenter.loadData();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search_menu, menu);
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                if (commitsPresenter != null) {
+                    commitsPresenter.onQuerySubmit(query);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        return true;
     }
 
     @Override
@@ -69,5 +100,12 @@ public class CommitsActivity extends AppCompatActivity implements CommitsView {
     @Override
     public void setContent(@Nullable List<CommitItem> commitItems) {
         commitsAdapter.updateDataSet(commitItems);
+    }
+
+    @Override
+    public void scrollToTop() {
+        if (commitsAdapter.getItemCount() > 0) {
+            contentRecyclerView.smoothScrollToPosition(0);
+        }
     }
 }
