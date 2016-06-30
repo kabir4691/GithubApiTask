@@ -2,21 +2,20 @@ package com.kabir.githubapitask.main.presenter;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.kabir.githubapitask.main.api.GithubApi;
 import com.kabir.githubapitask.main.model.CommitItem;
 import com.kabir.githubapitask.main.view.CommitsView;
 import com.kabir.githubapitask.util.ListUtils;
+import com.kabir.githubapitask.util.scheduler.RxSchedulersHook;
+import com.kabir.githubapitask.util.log.AppLog;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -28,12 +27,17 @@ public class CommitsPresenterImpl implements CommitsPresenter {
 
     private GithubApi githubApi;
     private CompositeSubscription compositeSubscription;
+    private RxSchedulersHook rxSchedulersHook;
+    private AppLog appLog;
 
     private List<CommitItem> commitItemList;
 
-    public CommitsPresenterImpl(@NonNull CommitsView commitsView, @NonNull GithubApi githubApi) {
+    public CommitsPresenterImpl(@NonNull CommitsView commitsView, @NonNull GithubApi githubApi,
+            @NonNull RxSchedulersHook rxSchedulersHook, @NonNull AppLog appLog) {
         this.commitsView = commitsView;
         this.githubApi = githubApi;
+        this.rxSchedulersHook = rxSchedulersHook;
+        this.appLog = appLog;
     }
 
     @Override
@@ -57,8 +61,8 @@ public class CommitsPresenterImpl implements CommitsPresenter {
 
         Observable<List<CommitItem>> observable = githubApi.getCommits(1, 25);
         Subscription subscription = observable
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(rxSchedulersHook.getIOScheduler())
+                .observeOn(rxSchedulersHook.getMainThreadScheduler())
                 .subscribe(new Action1<List<CommitItem>>() {
                     @Override
                     public void call(List<CommitItem> commitItems) {
@@ -80,15 +84,15 @@ public class CommitsPresenterImpl implements CommitsPresenter {
     @Override
     public void onQuerySubmit(@NonNull String query) {
 
-        Log.d("QUERY", query);
+        appLog.d("QUERY", query);
 
         if (ListUtils.isNullOrEmpty(commitItemList)) {
-            Log.e(TAG, "list is null or empty");
+            appLog.e(TAG, "list is null or empty");
             return;
         }
 
         if (query.isEmpty()) {
-            Log.e(TAG, "query is empty");
+            appLog.e(TAG, "query is empty");
             return;
         }
 

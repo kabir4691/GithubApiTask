@@ -14,7 +14,9 @@ import com.kabir.githubapitask.main.api.GithubApiProvider;
 import com.kabir.githubapitask.main.model.CommitItem;
 import com.kabir.githubapitask.main.presenter.CommitsPresenter;
 import com.kabir.githubapitask.main.presenter.CommitsPresenterImpl;
+import com.kabir.githubapitask.util.scheduler.RxSchedulersHook;
 import com.kabir.githubapitask.util.image.provider.GlideImageProvider;
+import com.kabir.githubapitask.util.log.AppLog;
 
 import java.util.List;
 
@@ -48,7 +50,8 @@ public class CommitsActivity extends AppCompatActivity implements CommitsView {
         commitsAdapter = new CommitsAdapter(this, new GlideImageProvider(this));
         contentRecyclerView.setAdapter(commitsAdapter);
 
-        commitsPresenter = new CommitsPresenterImpl(this, new GithubApiProvider());
+        commitsPresenter = new CommitsPresenterImpl(this, new GithubApiProvider(), new RxSchedulersHook(),
+                                                    new AppLog());
         if (commitsPresenter.attachView(getIntent())) {
             commitsPresenter.loadData();
         }
